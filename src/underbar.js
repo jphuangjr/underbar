@@ -7,6 +7,7 @@
   // seem very useful, but remember it--if a function needs to provide an
   // iterator when the user does not pass one in, this will be handy.
   _.identity = function(val) {
+    return val;
   };
 
   /**
@@ -37,7 +38,11 @@
   // Like first, but for the last elements. If n is undefined, return just the
   // last element.
   _.last = function(array, n) {
-    return n === undefined ? array[array.length-1] : array.splice(array.length-1, n);
+    if(n > array.length){
+      return array;
+    }else{
+      return n === undefined ? array[array.length-1] : array.slice(array.length-n, array.length);
+    }
   };
 
   // Call iterator(value, key, collection) for each element of collection.
@@ -104,6 +109,11 @@
 
   // Return the results of applying an iterator to each element.
   _.map = function(collection, iterator) {
+    var newArray = [];
+    _.each(collection, function(value){
+      newArray.push(iterator(value));
+    })
+    return newArray;
     // map() is a useful primitive iteration function that works a lot
     // like each(), but in addition to running the operation on all
     // the members, it also maintains an array of results.
@@ -148,6 +158,18 @@
   //   }); // should be 5, regardless of the iterator function passed in
   //          No accumulator is given so the first element is used.
   _.reduce = function(collection, iterator, accumulator) {
+    if(accumulator === undefined){
+      var sum = collection[0];
+      collection.shift();
+    }
+    else{
+      var sum = accumulator;
+    }
+    _.each(collection, function(value){
+      sum = iterator(sum, value)
+    })
+    return sum;
+
   };
 
   // Determine if the array or object contains a given value (using `===`).
@@ -165,7 +187,14 @@
 
   // Determine whether all of the elements match a truth test.
   _.every = function(collection, iterator) {
+    //TODO: revisit this function (.every)
     // TIP: Try re-using reduce() here.
+    return _.reduce(collection, function(bool, current_val){
+        if(iterator(current_val) === false){
+          bool = false;
+        }
+      return bool;
+    }, true)
   };
 
   // Determine whether any of the elements pass a truth test. If no iterator is
