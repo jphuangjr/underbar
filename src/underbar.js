@@ -1,5 +1,3 @@
-//TODO: Edited each function, finished Extend, Defaults
-
 (function() {
   'use strict';
 
@@ -114,10 +112,30 @@
   };
 
   // Produce a duplicate-free version of the array.
-  _.uniq = function(array) {
-    return _.reject(array, function(v, i){
-      return _.indexOf(array,v) != i && _.lastIndexOf(array, v) == i;
+  _.uniq = function(array, isSorted) {
+    var unique;
+    var result = [];
+    if(isSorted){
+      unique = _.reject(array, function(v, i){
+        return _.indexOf(array,v) != i && _.lastIndexOf(array, v) == i;
+      })
+    }
+    else{
+      var sorted = array.sort();
+      for(var i=0; i<sorted.length; i++) {
+        for (var j = i + 1; j < sorted.length; j++) {
+          if (sorted[i] === sorted[j]) {
+            sorted.splice(j, 1);
+            j--;
+          }
+        }
+        unique = sorted;
+      }
+    }
+    _.each(unique, function(value){
+      result.push(value);
     })
+    return result;
   };
 
 
@@ -204,8 +222,8 @@
     //TODO: revisit this function (.every)
     // TIP: Try re-using reduce() here.
     return _.reduce(collection, function(bool, current_val){
-        if(iterator(current_val) === false){
-          bool = false;
+        if(iterator(current_val) == false){
+          return bool = false
         }
       return bool;
     }, true)
@@ -214,6 +232,7 @@
   // Determine whether any of the elements pass a truth test. If no iterator is
   // provided, provide a default one
   _.some = function(collection, iterator) {
+    //TODO: Some
     // TIP: There's a very clever way to re-use every() here.
   };
 
@@ -273,7 +292,7 @@
   // Return a function that can be called at most one time. Subsequent calls
   // should return the previously returned value.
   _.once = function(func) {
-    //TODO: Needs Work.
+    //TODO: Once Needs Work.
       var alreadyCalled = false;
       var result;
       if(alreadyCalled === false){
@@ -308,6 +327,7 @@
   // already computed the result for the given argument and return that value
   // instead if possible.
   _.memoize = function(func) {
+
   };
 
   // Delays a function for the given number of milliseconds, and then calls
