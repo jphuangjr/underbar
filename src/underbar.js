@@ -1,3 +1,5 @@
+//TODO: Edited each function, finished Extend, Defaults
+
 (function() {
   'use strict';
 
@@ -53,12 +55,12 @@
   _.each = function(collection, iterator) {
     if(Array.isArray(collection)){
       for(var i =0; i<collection.length; i++){
-        iterator(collection[i]);
+        iterator(collection[i],i, collection);
       }
     }
     else{
       for(var key in collection){
-        iterator(collection[key])
+        iterator(collection[key],key,collection)
       }
     }
   };
@@ -80,11 +82,22 @@
     return result;
   };
 
+  _.lastIndexOf = function(array, target){
+    var result = -1;
+    for(var i=array.length-1; i>=0; i--){
+      if (array[i] === target && result === -1) {
+        result = i;
+      }
+    };
+    return result;
+
+  }
+
   // Return all elements of an array that pass a truth test.
   _.filter = function(collection, test) {
     var passed = [];
-    _.each(collection, function(value){
-      if(test(value)){
+    _.each(collection, function(value, i){
+      if(test(value, i)){
         passed.push(value);
       }
     })
@@ -95,15 +108,16 @@
   _.reject = function(collection, test) {
     // TIP: see if you can re-use _.filter() here, without simply
     // copying code in and modifying it
-    return _.filter(collection, function(value){
-      return !test(value);
+    return _.filter(collection, function(value, i){
+      return !test(value, i);
     })
   };
 
   // Produce a duplicate-free version of the array.
   _.uniq = function(array) {
-    //TODO: duplicate-free version of array.
-
+    return _.reject(array, function(v, i){
+      return _.indexOf(array,v) != i && _.lastIndexOf(array, v) == i;
+    })
   };
 
 
@@ -223,11 +237,28 @@
   //     bla: "even more stuff"
   //   }); // obj1 now contains key1, key2, key3 and bla
   _.extend = function(obj) {
+    var new_obj = obj;
+    _.each(arguments, function(object){
+      for(var key in object){
+        new_obj[key] = object[key];
+      }
+    })
+    return new_obj;
   };
+
 
   // Like extend, but doesn't ever overwrite a key that already
   // exists in obj
   _.defaults = function(obj) {
+    var new_obj = obj;
+    _.each(arguments, function(object){
+      for(var key in object){
+        if(new_obj[key] === undefined){
+          new_obj[key] = object[key];
+        }
+      }
+    })
+    return new_obj;
   };
 
 
@@ -242,11 +273,17 @@
   // Return a function that can be called at most one time. Subsequent calls
   // should return the previously returned value.
   _.once = function(func) {
+    //TODO: Needs Work.
+      var alreadyCalled = false;
+      var result;
+      if(alreadyCalled === false){
+        alreadyCalled = true;
+        return func();
+      }
     // TIP: These variables are stored in a "closure scope" (worth researching),
     // so that they'll remain available to the newly-generated function every
     // time it's called.
-    var alreadyCalled = false;
-    var result;
+
 
     // TIP: We'll return a new function that delegates to the old one, but only
     // if it hasn't been called before.
