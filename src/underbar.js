@@ -221,19 +221,32 @@
   _.every = function(collection, iterator) {
     //TODO: revisit this function (.every)
     // TIP: Try re-using reduce() here.
-    return _.reduce(collection, function(bool, current_val){
-        if(iterator(current_val) == false){
-          return bool = false
-        }
-      return bool;
+    if(iterator == undefined){
+      iterator = _.identity
+    }
+    return _.reduce(collection, function(value, current){
+      if(current == undefined || current == true && value == false){
+        current = false
+      }
+      if(iterator(current) == false){
+        return false;
+      }
+      return value;
     }, true)
   };
 
   // Determine whether any of the elements pass a truth test. If no iterator is
   // provided, provide a default one
   _.some = function(collection, iterator) {
-    //TODO: Some
-    // TIP: There's a very clever way to re-use every() here.
+    if(iterator == undefined){
+      iterator = _.identity
+    }
+    return _.reduce(collection, function(value, current){
+      if(iterator(current)){
+        return current = true;
+      }
+      return value;
+    }, false)
   };
 
 
@@ -292,13 +305,8 @@
   // Return a function that can be called at most one time. Subsequent calls
   // should return the previously returned value.
   _.once = function(func) {
-    //TODO: Once Needs Work.
       var alreadyCalled = false;
       var result;
-      if(alreadyCalled === false){
-        alreadyCalled = true;
-        return func();
-      }
     // TIP: These variables are stored in a "closure scope" (worth researching),
     // so that they'll remain available to the newly-generated function every
     // time it's called.
@@ -307,7 +315,7 @@
     // TIP: We'll return a new function that delegates to the old one, but only
     // if it hasn't been called before.
     return function() {
-      if (!alreadyCalled) {
+      if(!alreadyCalled) {
         // TIP: .apply(this, arguments) is the standard way to pass on all of the
         // infromation from one function call to another.
         result = func.apply(this, arguments);
@@ -327,7 +335,13 @@
   // already computed the result for the given argument and return that value
   // instead if possible.
   _.memoize = function(func) {
-
+    //TODO: figure out how to get it to work for different arguments
+    _.memoize._cache = _.memoize._cache || {};
+    if(!_.memoize._cache[func]){
+      var new_memo = _.once(func);
+      _.memoize._cache[func] = new_memo;
+    }
+    return _.memoize._cache[func];
   };
 
   // Delays a function for the given number of milliseconds, and then calls
@@ -337,6 +351,15 @@
   // parameter. For example _.delay(someFunction, 500, 'a', 'b') will
   // call someFunction('a', 'b') after 500ms
   _.delay = function(func, wait) {
+    var function_arg = [];
+    _.each(arguments, function(value, i){
+      if(i != 0 && i != 1)
+        function_arg.push(value)
+    })
+    return setTimeout(function(){
+      return func.apply(null, function_arg)
+    }, wait)
+
   };
 
 
@@ -351,6 +374,16 @@
   // input array. For a tip on how to make a copy of an array, see:
   // http://mdn.io/Array.prototype.slice
   _.shuffle = function(array) {
+    var array2 = array.slice(0, array.length);
+    _.each(array2, function(value, i){
+      var random = Math.random() * (array2.length - 0) + 0;
+      var rounded = Math.floor(random);
+      var temp = array2[rounded];
+      array2[rounded] = value;
+      array2[i] = temp;
+    })
+    return array2;
+
   };
 
 
