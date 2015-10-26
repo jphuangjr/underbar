@@ -219,7 +219,7 @@
 
   // Determine whether all of the elements match a truth test.
   _.every = function(collection, iterator) {
-    //TODO: revisit this function (.every)
+
     // TIP: Try re-using reduce() here.
     if(iterator == undefined){
       iterator = _.identity
@@ -335,14 +335,17 @@
   // already computed the result for the given argument and return that value
   // instead if possible.
   _.memoize = function(func) {
-    //TODO: figure out how to get it to work for different arguments
-    _.memoize._cache = _.memoize._cache || {};
-    if(!_.memoize._cache[func]){
-      var new_memo = _.once(func);
-      _.memoize._cache[func] = new_memo;
+    var cache = {};
+    return function(key){
+      if(key in cache){
+        return cache[key]
+      }
+      else{
+        return cache[key] = func.apply(this, arguments)
+      }
     }
-    return _.memoize._cache[func];
-  };
+  }
+
 
   // Delays a function for the given number of milliseconds, and then calls
   // it with the arguments supplied.
